@@ -27,8 +27,7 @@ def distance():
     time.sleep(0.00001)
     GPIO.output(GPIO_TRIGGER, False)
  
-    StartTime = time.time()
-    StopTime = time.time()
+    StartTime = StopTime = time.time()
  
     # save StartTime
     while GPIO.input(GPIO_ECHO) == 0:
@@ -42,25 +41,19 @@ def distance():
     TimeElapsed = StopTime - StartTime
     # multiply with the sonic speed (34300 cm/s)
     # and divide by 2, because there and back
-    distance = (TimeElapsed * 34300) / 2
+    distance = (TimeElapsed * 34300) // 2
  
     return distance
 
-def buzzer_on():
-    GPIO.output(GPIO_BUZZER, True)
-
-def buzzer_off():
-    GPIO.output(GPIO_BUZZER, False)
+def change_buzzer(turn_on):
+    GPIO.output(GPIO_BUZZER, turn_on)
 
  
 try:
     while True:
         dist = distance()
         print ("Measured Distance = %.1f cm" % dist)
-        if dist < SEEN_DIST:
-            buzzer_on()
-        else:
-            buzzer_off()
+        change_buzzer(dist < SEEN_DIST)
         time.sleep(1)
  
     # Reset by pressing CTRL + C
